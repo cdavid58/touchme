@@ -1,0 +1,31 @@
+<div class="row mt-3 list_employee col-12">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Listado de canciones</h5>
+        <div class="table-responsive">
+         <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Musica</th>
+                <th scope="col">Artista</th>
+                <th scope="col">Solicitado</th>
+              </tr>
+            </thead>
+            <tbody id="pather">
+              {% for i in list_canciones %}
+                <tr>
+                  <td>1</td>
+                  <td>{{i.music}}</td>
+                  <td>{{i.artist}}</td>
+                  <td>Usuario</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

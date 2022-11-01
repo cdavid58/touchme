@@ -1,0 +1,211 @@
+{% extends './base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+
+<div class="form-group row">
+    <div class="col-md-2 col-12" style="padding: 5px !important;">
+        <select class="form-control gender">
+          {% for i in gender %}
+            <option>{{i.gender}}</option>
+          {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-5 col-12" style="padding: 5px !important;">
+        <input class="form-control music" type="text" value="" placeholder="Escriba la Cancion">
+    </div>
+    <div class="col-md-4 col-12" style="padding: 5px !important;">
+        <input class="form-control artist" type="text" value="" placeholder="Escriba el artista">
+    </div>
+    <div class="col-md-1 col-12" style="padding: 5px !important;">
+        <input class="btn btn-primary request col-12" value="Solicitar" />
+    </div>
+</div>
+
+<style>
+  .music-player-container{
+    width: 100%;
+  }
+  @media screen and (width > 600px) {
+    .music-player-container{
+      width: 50%;
+    }
+  }
+</style>
+
+<div class="music-player-container">
+    <div class="title-music-container">
+        <h4 class="song-title">Música</h4>
+        <span class="song-author">Artista o Cantautor</span>
+    </div>
+    <div class="controls-music-container">
+        <div class="progress-song-container">
+            <div class="progress-bar">
+                <span class="progress"></span>
+            </div>
+        </div>
+        <div class="time-container">
+            <span class="time-left" id="CurrentSongTime"></span>
+            <span class="time-left" id="SongLength"></span>
+        </div>
+    </div>
+    <audio controls preload="metadata" src=""></audio>
+    <div class="main-song-controls">
+        <img src="{% static 'Play.svg' %}" alt="" class="icon" id="PlayPause">
+    </div>
+</div>
+
+{% include './table_music.html' %}
+
+{% endblock %}
+{% block script %}
+  <script>
+    list_music = [];
+    music = "";
+    artist = "";
+    data = '{{list_music}}'
+    data = JSON.parse(data.replace(/&quot;/g,'"'))
+    name_music = ""
+
+
+    var pageRefresh = 1000; //5 s
+    setInterval(function() {
+          refresh();
+          if(list_music.length == 0){
+          }
+        }, pageRefresh
+    );
+
+    // Functions
+    function refresh() {
+        $('.list_employee').load("{% url 'Index' %} .list_employee");
+    }
+
+
+    const audio = document.querySelector('audio'),
+        songLength = document.getElementById('SongLength'),
+        currentTime = document.getElementById('CurrentSongTime');
+
+    const calculateTime = (secs) =>{
+        const minutes = Math.floor(secs / 60),
+            seconds = Math.floor(secs % 60),
+            returnedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
+            return `${minutes}:${returnedSeconds}`;
+    }
+
+    const displayDuration = () =>{
+        songLength.innerHTML = calculateTime(audio.duration);
+    }
+
+    if(audio.readyState > 0){
+        displayDuration();
+        currentTime.innerHTML = calculateTime(audio.currentTime);
+    }else{
+        audio.addEventListener('loadedmetadata', () =>{
+            displayDuration();
+        })
+    }
+
+    audio.ontimeupdate = function(){
+        currentTime.innerHTML = calculateTime(audio.currentTime);
+        percentage = (audio.currentTime / audio.duration) * 100
+        laps = 0
+        if(percentage == 100){
+          $.ajax({
+            url:"{% url 'Delete_Song' %}",
+            data:{'name_music':name_music},
+            success:function(data){
+              location.reload(true)
+            }
+          })
+          laps += 1
+        }
+        setProgress();
+    }
+
+    function setProgress(){
+        let percentage = (audio.currentTime / audio.duration) * 100;
+        document.querySelector('.progress').style.width = percentage + '%'; 
+    }
+
+    //Audio Controls
+    const playPause = document.getElementById('PlayPause'),
+        plus10 = document.getElementById('Plus10'),
+        back10 = document.getElementById('Back10');
+
+    playPause.addEventListener('click', ()=>{
+        if(audio.paused){
+            playPause.src = 'http://localhost:8000/static/pause.svg';
+            audio.play();
+        }else{
+            playPause.src = 'http://localhost:8000/static/Play.svg';
+            audio.pause();
+        }
+    })
+    
+    function Change_Music() {
+      $("audio").attr('src','http://localhost:8000/static/'+list_music[0]+".mp3")
+      if(audio.readyState > 0){
+          displayDuration();
+          currentTime.innerHTML = calculateTime(audio.currentTime);
+      }else{
+          audio.addEventListener('loadedmetadata', () =>{
+              displayDuration();
+          })
+      }
+      playPause.src = 'http://localhost:8000/static/pause.svg';
+      audio.play();
+      name_music = list_music[0]
+      list_music.shift()
+      console.log(list_music)
+    }
+
+    function Create_List_Music(){
+      list_music = []
+      console.log(data+' Datos nuevos')
+      for(var i = 0; i < data.length; i++){
+        list_music.push(data[i]['music'])
+      }
+      Change_Music()
+    }
+    Create_List_Music()
+
+
+
+    // $(".request").click(function(e){
+    //   e.preventDefault()
+    //   music = $(".music").val()
+    //   artist = $(".artist").val()
+    //   if(music != "" && artist != ""){
+    //     $.ajax({
+    //       url : "{% url 'Download_Music' %}",
+    //       data: {'music':music, 'artist':artist},
+    //       success:function(data){
+    //         gender = $(".gender").val()
+    //         $("#pather").append(`
+    //           <tr>
+    //             <th scope="row">1</th>
+    //             <td>${music}</td>
+    //             <td>${artist}</td>
+    //             <td>Usuario</td>
+    //           </tr>
+    //         `)
+    //         if(list_music.length == 0){
+    //           list_music.push(data)
+    //         }
+    //         else{
+    //           list_music.push(data)
+    //         }
+    //         $(".music").val("")
+    //         $(".artist").val("")
+    //       }
+    //     })
+    //   }
+    // })
+
+    
+
+
+  </script>
+
+{% endblock %}

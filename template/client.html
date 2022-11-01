@@ -1,0 +1,72 @@
+{% extends './base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+
+<div class="form-group row">
+    <div class="col-md-2 col-12" style="padding: 5px !important;">
+        <select class="form-control gender">
+          {% for i in gender %}
+            <option>{{i.gender}}</option>
+          {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-5 col-12" style="padding: 5px !important;">
+        <input class="form-control music" type="text" value="" placeholder="Escriba la Cancion">
+    </div>
+    <div class="col-md-4 col-12" style="padding: 5px !important;">
+        <input class="form-control artist" type="text" value="" placeholder="Escriba el artista">
+    </div>
+    <div class="col-md-1 col-12" style="padding: 5px !important;">
+        <input class="btn btn-primary request col-12" value="Solicitar" />
+    </div>
+</div>
+
+{% include './table_music.html' %}
+
+{% endblock %}
+{% block script %}
+  <script>
+
+    $(".request").click(function(e){
+      e.preventDefault()
+      music = $(".music").val()
+      artist = $(".artist").val()
+      if(music != "" && artist != ""){
+        $.ajax({
+          url : "{% url 'Save_Music_Client' %}",
+          data: {'music':music, 'artist':artist},
+          success:function(data){
+          },
+          complete:function(data){
+            $("#pather").append(`
+              <tr>
+                <th scope="row">1</th>
+                <td>${music}</td>
+                <td>${artist}</td>
+                <td>Usuario</td>
+              </tr>
+            `)
+            $(".music").val("")
+            $(".artist").val("")
+          }
+        })
+      }
+    })
+
+    var pageRefresh = 1000; //5 s
+    setInterval(function() {
+        	console.log("Hola")
+        	refresh();
+        }, pageRefresh
+    );
+
+    // Functions
+    function refresh() {
+        $('.list_employee').load("{% url 'Client' %} .list_employee");
+    }
+
+
+  </script>
+
+{% endblock %}

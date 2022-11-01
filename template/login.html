@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+  <meta name="description" content=""/>
+  <meta name="author" content=""/>
+  <title>TouchMe</title>
+  <!-- loader-->
+  <link href="{% static 'assets/css/pace.min.css' %}" rel="stylesheet"/>
+  <script src="{% static 'assets/js/pace.min.js' %}"></script>
+  <!--favicon-->
+  <link rel="icon" href="{% static 'logo.ico' %}" type="image/x-icon">
+  <!-- Bootstrap core CSS-->
+  <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet"/>
+  <!-- animate CSS-->
+  <link href="{% static 'assets/css/animate.css' %}" rel="stylesheet" type="text/css"/>
+  <!-- Icons CSS-->
+  <link href="{% static 'assets/css/icons.css' %}" rel="stylesheet" type="text/css"/>
+  <!-- Custom Style-->
+  <link href="{% static 'assets/css/app-style.css' %}" rel="stylesheet"/>
+  <style>
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none; 
+      margin: 0; 
+    }
+
+    input[type=number] { -moz-appearance:textfield; }
+  </style>
+  
+</head>
+
+<body class="bg-theme bg-theme1">
+
+<!-- start loader -->
+   <div id="pageloader-overlay" class="visible incoming"><div class="loader-wrapper-outer"><div class="loader-wrapper-inner" ><div class="loader"></div></div></div></div>
+   <!-- end loader -->
+
+<!-- Start wrapper-->
+ <div id="wrapper">
+
+	 <div class="loader-wrapper"><div class="lds-ring"><div></div><div></div><div></div><div></div></div></div>
+		<div class="card card-authentication1 mx-auto my-5">
+			<div class="card-body">
+			 <div class="card-content p-2">
+			 	<div class="text-center">
+			 		<img src="{% static 'logo.png' %}" style="width: 100% !important; height: 100% !important;" alt="logo icon">
+			 	</div>
+			  <div class="card-title text-uppercase text-center py-3">Ingresar</div>
+			    <form method="post">{% csrf_token %}
+             <div class="form-group">
+            <label for="exampleInputUsername" class="sr-only">Ingrese el código del bar</label>
+             <div class="position-relative has-icon-right">
+              <input type="text" id="exampleInputUsername" class="form-control input-shadow" name="code" placeholder="Ingrese el código del bar">
+              <div class="form-control-position">
+                <i class="zmdi zmdi-balance"></i>
+              </div>
+             </div>
+            </div>
+					  <div class="form-group">
+					  <label for="exampleInputUsername" class="sr-only">Usuario</label>
+					   <div class="position-relative has-icon-right">
+						  <input type="number" id="exampleInputUsername" class="form-control input-shadow" name="number_phone" placeholder="Ingrese su número de teléfono">
+						  <div class="form-control-position">
+							  <i class="icon-user"></i>
+						  </div>
+					   </div>
+					  </div>
+					  <input type="text" name="lat" class="lat" hidden>
+					  <input type="text" name="lon" class="lon" hidden>
+						<button type="submit" class="btn btn-light btn-block">Ingresar</button>
+						 
+				 </form>
+			   </div>
+			  </div>
+		     </div>
+	    
+	     <!--Start Back To Top Button-->
+	    <a href="javaScript:void();" class="back-to-top"><i class="fa fa-angle-double-up"></i> </a>
+	    <!--End Back To Top Button-->
+		</div>
+  <!--end color switcher-->
+	
+	</div><!--wrapper-->
+	
+  <!-- Bootstrap core JavaScript-->
+  <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+  <script src="{% static 'assets/js/popper.min.js' %}"></script>
+  <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+	
+  <!-- sidebar-menu js -->
+  <script src="{% static 'assets/js/sidebar-menu.js' %}"></script>
+  
+  <!-- Custom scripts -->
+  <script src="{% static 'assets/js/app-script.js' %}"></script>
+
+  <script>
+  	function getRandomInt(max) {
+		  return Math.floor(Math.random() * max);
+		}
+		$("body").addClass("bg-theme"+getRandomInt(5))
+
+		if (!!navigator.geolocation) {
+          //Pedimos los datos de geolocalizacion al navegador
+          navigator.geolocation.getCurrentPosition(
+              //Si el navegador entrega los datos de geolocalizacion los imprimimos
+              function (position) {
+                  // window.alert("nav permitido");
+                  $(".lat").val(position.coords.latitude);
+                  $(".lon").val(position.coords.longitude);
+              },
+              //Si no los entrega manda un alerta de error
+              function () {
+                  window.alert("nav no permitido");
+              }
+          );
+      }
+  </script>
+  
+</body>
+</html>
